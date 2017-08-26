@@ -4,27 +4,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
+using DSharpPlus.CommandsNext;
 
 namespace KPokeBot {
     class Program {
 
         static DiscordClient discord;
+        static CommandsNextModule commands;
 
         static void Main(string[] args) {
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         static async Task MainAsync(String[] args) {
+            // Set up the client connection
             discord = new DiscordClient(new DiscordConfig {
                 Token = "MzUwODU5NTcxNDY5ODc3MjU4.DIKLBg.5BXCMFiPYKUNuFkp_wwLB8f2IeY",
-                TokenType = TokenType.Bot
+                TokenType = TokenType.Bot,
+                UseInternalLogHandler = true,
+                LogLevel = LogLevel.Debug
             });
 
-            discord.MessageCreated += async e =>
-            {
-                if (e.Message.Content.ToLower().StartsWith("ping"))
-                    await e.Message.RespondAsync("pong!");
-            };
+            // Set up the command handler
+            commands = discord.UseCommandsNext(new CommandsNextConfiguration {
+                StringPrefix = "pk."
+            });
+            commands.RegisterCommands<CommandManager>();
+
+            //discord.MessageCreated += async e =>
+            //{
+            //    if (e.Message.Content.ToLower().StartsWith("ping"))
+            //        await e.Message.RespondAsync("pong!");
+            //};
 
             await discord.ConnectAsync();
             await Task.Delay(-1);
