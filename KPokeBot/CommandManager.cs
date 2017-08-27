@@ -14,26 +14,31 @@ namespace KPokeBot {
 
         [Command("catch")]
         public async Task Catch(CommandContext cc) {
-
-            // Limited to original 151, not to NumberOfPokemon.
-            int pokeNum;
-            string pName;
-
-            //PokemonSpecies p = await DataFetcher.GetApiObject<PokemonSpecies>(pokeNum);
-
-            while(!Pokedex.GetNewPokemon(rand, out pokeNum)) {
-                pName = Pokedex.Pokemon[pokeNum];
-                await cc.RespondAsync($"You almost caught a " + Tools.CapFirst(pName) + " but it got away because you suck!");
-            }
-            pName = Pokedex.Pokemon[pokeNum];
-
+            // Get the person who's catching.
             Trainer t = Trainer.GetActiveTrainer(cc.User.Id);
-            t.AddPokemon(pokeNum);
 
-            Uri url = new Uri("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + pokeNum.ToString() + ".png");
-            await cc.RespondAsync($"{cc.User.Mention} has caught a **" + Tools.CapFirst(pName) + "**!\r\n" + url.ToString() + "\r\nYou now have " + t.NumOwned + " pokemon.");
+            if (DateTime.Now.Subtract(t.lastCatch).TotalHours < 3) {
+                await cc.RespondAsync($"Stop trying to catch too early you moron. \r\nLast catch at: " + t.lastCatch.ToString());
+            } else {
+                // Limited to original 151, not to NumberOfPokemon.
+                int pokeNum;
+                string pName;
 
-            Trainer.SaveAll();
+                //PokemonSpecies p = await DataFetcher.GetApiObject<PokemonSpecies>(pokeNum);
+
+                while (!Pokedex.GetNewPokemon(rand, out pokeNum)) {
+                    pName = Pokedex.Pokemon[pokeNum];
+                    await cc.RespondAsync($"You almost caught a " + Tools.CapFirst(pName) + " but it got away because you suck!");
+                }
+                pName = Pokedex.Pokemon[pokeNum];
+
+                t.AddPokemon(pokeNum);
+
+                Uri url = new Uri("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + pokeNum.ToString() + ".png");
+                await cc.RespondAsync($"{cc.User.Mention} has caught a **" + Tools.CapFirst(pName) + "**! \r\nYou now have " + t.NumOwned + " pokemon.\r\nLast catch at: " + t.lastCatch.ToString() + "\r\n" + url.ToString());
+
+                Trainer.SaveAll();
+            }
         }
 
         [Command("list")]
@@ -47,5 +52,7 @@ namespace KPokeBot {
 
             await cc.RespondAsync(sb.ToString());
         }
+
+        
     }
 }

@@ -10,10 +10,12 @@ namespace KPokeBot {
         public ulong uid;
         public SortedDictionary<int, int> pokemonInventory;
         public static List<Trainer> Trainers;
+        public DateTime lastCatch;
 
         public Trainer(ulong uid) {
             this.uid = uid;
             pokemonInventory = new SortedDictionary<int, int>();
+            lastCatch = DateTime.Now.Subtract(new TimeSpan(50, 0, 0));
         }
 
         public int NumOwned {
@@ -32,12 +34,13 @@ namespace KPokeBot {
             } else {
                 pokemonInventory.Add(pokeNum, 1);
             }
+            lastCatch = DateTime.Now;
         }
 
         public static void SaveAll() {
             StringBuilder sb = new StringBuilder();
             foreach(Trainer t in Trainers) {
-                sb.AppendLine(t.uid.ToString() + " " + Tools.IntDictToString(t.pokemonInventory));
+                sb.AppendLine(t.uid.ToString() + " " + t.lastCatch.ToBinary().ToString() + " " + Tools.IntDictToString(t.pokemonInventory));
             }
             System.IO.File.WriteAllText("savedData.txt", sb.ToString());
         }
@@ -47,9 +50,11 @@ namespace KPokeBot {
                 foreach (string line in System.IO.File.ReadLines("savedData.txt")) {
                     string[] parsed = line.Split(' ');
                     ulong uid = ulong.Parse(parsed[0]);
-                    SortedDictionary<int, int> pokes = Tools.StringToIntDict(parsed[1]);
+                    string lastCatchString = parsed[1];
+                    SortedDictionary<int, int> pokes = Tools.StringToIntDict(parsed[2]);
                     Trainer t = new Trainer(uid);
                     t.pokemonInventory = pokes;
+                    t.lastCatch = DateTime.FromBinary(long.Parse(lastCatchString));
                     Trainers.Add(t);
                 }
             }
