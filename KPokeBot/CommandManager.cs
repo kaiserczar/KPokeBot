@@ -17,7 +17,7 @@ namespace KPokeBot {
         public async Task Catch(CommandContext cc) {
 
             // Limited to original 151, not to NumberOfPokemon.
-            int pokeNum = rand.Next(151) + 1;
+            int pokeNum = Pokedex.GetNewPokemon(rand);
 
             //PokemonSpecies p = await DataFetcher.GetApiObject<PokemonSpecies>(pokeNum);
             String pName = Pokedex.Pokemon[pokeNum];
