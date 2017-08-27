@@ -16,10 +16,16 @@ namespace KPokeBot {
         public async Task Catch(CommandContext cc) {
 
             // Limited to original 151, not to NumberOfPokemon.
-            int pokeNum = Pokedex.GetNewPokemon(rand);
+            int pokeNum;
+            string pName;
 
             //PokemonSpecies p = await DataFetcher.GetApiObject<PokemonSpecies>(pokeNum);
-            String pName = Pokedex.Pokemon[pokeNum];
+
+            while(!Pokedex.GetNewPokemon(rand, out pokeNum)) {
+                pName = Pokedex.Pokemon[pokeNum];
+                await cc.RespondAsync($"You almost caught a " + Tools.CapFirst(pName) + " but it got away because you suck!");
+            }
+            pName = Pokedex.Pokemon[pokeNum];
 
             Trainer t = Trainer.GetActiveTrainer(cc.User.Id);
             t.AddPokemon(pokeNum);

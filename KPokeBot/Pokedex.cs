@@ -21,12 +21,14 @@ namespace KPokeBot {
 
         }
 
-        public static int GetNewPokemon(Random r) {
-            int retVal = r.Next(NumberOfPokemon) + 1;
+        // Returns whether it was a success or failure to catch.
+        public static bool GetNewPokemon(Random r, out int pokeNum) {
+            pokeNum = r.Next(NumberOfPokemon) + 1;
+            bool retVal = true;
 
             foreach (int i in Legendaries) {
-                if (retVal == i & r.Next(4) == 0) {
-                    retVal = GetNewPokemon(r);
+                if (pokeNum == i & r.Next(4) != 0) {
+                    retVal = false;
                 }
             }
 
