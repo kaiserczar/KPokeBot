@@ -10,7 +10,6 @@ using PokeAPI;
 namespace KPokeBot {
     public class CommandManager {
 
-        public static int NumberOfPokemon = 802;
         private static Random rand = new Random();
 
         [Command("catch")]
