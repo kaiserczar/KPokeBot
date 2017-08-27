@@ -15,5 +15,20 @@ namespace KPokeBot {
             return s.ToUpper();
         }
 
+        public static SortedDictionary<int,int> StringToIntDict(string s) {
+            Dictionary<int, int> retVal = s.Split(',')
+                .Select(p => p.Trim().Split(':'))
+                .ToDictionary(p => int.Parse(p[0]), p => int.Parse(p[1]));
+            SortedDictionary<int, int> retValReal = new SortedDictionary<int, int>(retVal);
+            return retValReal;
+        }
+
+        public static string IntDictToString(SortedDictionary<int,int> d) {
+            string retVal = d.Aggregate(new StringBuilder(),
+                (a, b) => a.Append(",").Append(b.Key.ToString()).Append(":").Append(b.Value.ToString()),
+                (a) => a.Remove(0, 1).ToString());
+            return retVal;
+        }
+
     }
 }

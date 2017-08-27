@@ -18,12 +18,28 @@ namespace KPokeBot {
 
             int pokeNum = rand.Next(802) + 1;
 
-            PokemonSpecies p = await DataFetcher.GetApiObject<PokemonSpecies>(pokeNum);
-            
-            await cc.RespondAsync($"{cc.User.Mention} has caught a **" + Tools.CapFirst(p.Name) + "**!");
+            //PokemonSpecies p = await DataFetcher.GetApiObject<PokemonSpecies>(pokeNum);
+            String pName = Pokedex.Pokemon[pokeNum];
+
+            Trainer t = Trainer.GetActiveTrainer(cc.User.Id);
+            t.AddPokemon(pokeNum);
+
             Uri url = new Uri("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + pokeNum.ToString() + ".png");
-            await cc.RespondAsync(url.ToString());
+            await cc.RespondAsync($"{cc.User.Mention} has caught a **" + Tools.CapFirst(pName) + "**!\r\n" + url.ToString() + "\r\nYou now have " + t.NumOwned + " pokemon.");
+
+            Trainer.SaveAll();
         }
 
+        [Command("list")]
+        public async Task List(CommandContext cc) {
+            StringBuilder sb = new StringBuilder();
+            Trainer t = Trainer.GetActiveTrainer(cc.User.Id);
+            sb.AppendLine("**" + cc.User.Username + "'s Pokemon:** Captured **" + t.NumOwned + "** Pokemon.");
+            foreach (int i in t.pokemonInventory.Keys) {
+                sb.AppendLine(Pokedex.Pokemon[i] + " (" + i.ToString() + ") x" + t.pokemonInventory[i].ToString());
+            }
+
+            await cc.RespondAsync(sb.ToString());
+        }
     }
 }

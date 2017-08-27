@@ -7,16 +7,21 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 
 namespace KPokeBot {
-    class Program {
+    public class Program {
 
         static DiscordClient discord;
         static CommandsNextModule commands;
 
         static void Main(string[] args) {
+            System.Diagnostics.Debug.WriteLine(System.IO.Directory.GetCurrentDirectory().ToString());
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         static async Task MainAsync(String[] args) {
+
+            Pokedex.Init();
+            Trainer.Init();
+
             // Set up the client connection
             discord = new DiscordClient(new DiscordConfig {
                 Token = "MzUwODU5NTcxNDY5ODc3MjU4.DIKLBg.5BXCMFiPYKUNuFkp_wwLB8f2IeY",
