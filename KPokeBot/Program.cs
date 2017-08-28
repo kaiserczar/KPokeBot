@@ -5,15 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.Interactivity;
 
 namespace KPokeBot {
     public class Program {
 
-        static DiscordClient discord;
-        static CommandsNextModule commands;
+        public static bool DEBUG = true;
+
+        public static DiscordClient discord;
+        public static CommandsNextModule commands;
+        public static InteractivityModule interactivity;
 
         static void Main(string[] args) {
-            System.Diagnostics.Debug.WriteLine(System.IO.Directory.GetCurrentDirectory().ToString());
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
@@ -23,18 +26,36 @@ namespace KPokeBot {
             Trainer.Init();
 
             // Set up the client connection
-            discord = new DiscordClient(new DiscordConfig {
-                Token = "MzUwODU5NTcxNDY5ODc3MjU4.DIKLBg.5BXCMFiPYKUNuFkp_wwLB8f2IeY",
-                TokenType = TokenType.Bot,
-                UseInternalLogHandler = true,
-                LogLevel = LogLevel.Debug
-            });
+            if (DEBUG) {
+                discord = new DiscordClient(new DiscordConfig {
+                    Token = "MzUxNDI1Njc1NDc2ODYwOTM4.DISaLg.U10iSWt9_c5QOClpPxY9wPz5QlY",
+                    TokenType = TokenType.Bot,
+                    UseInternalLogHandler = true,
+                    LogLevel = LogLevel.Debug
+                });
+            } else {
+                discord = new DiscordClient(new DiscordConfig {
+                    Token = "MzUwODU5NTcxNDY5ODc3MjU4.DIKLBg.5BXCMFiPYKUNuFkp_wwLB8f2IeY",
+                    TokenType = TokenType.Bot,
+                    UseInternalLogHandler = true,
+                    LogLevel = LogLevel.Debug
+                });
+            }
+
+            interactivity = discord.UseInteractivity();
 
             // Set up the command handler
-            commands = discord.UseCommandsNext(new CommandsNextConfiguration {
-                StringPrefix = "pk."
-            });
-            commands.RegisterCommands<CommandManager>();
+            if (DEBUG) {
+                commands = discord.UseCommandsNext(new CommandsNextConfiguration {
+                    StringPrefix = "kp."
+                });
+                commands.RegisterCommands<CommandManager>();
+            } else {
+                commands = discord.UseCommandsNext(new CommandsNextConfiguration {
+                    StringPrefix = "pk."
+                });
+                commands.RegisterCommands<CommandManager>();
+            }
 
             //discord.MessageCreated += async e =>
             //{

@@ -12,12 +12,13 @@ namespace KPokeBot {
 
         private static Random rand = new Random();
 
-        [Command("catch")]
+        [Command("catch"), Description("Try to catch a new pokemon.")]
         public async Task Catch(CommandContext cc) {
             // Get the person who's catching.
             Trainer t = Trainer.GetActiveTrainer(cc.User.Id);
 
-            if (DateTime.Now.Subtract(t.lastCatch).TotalHours < 3) {
+            //if (false) { 
+            if (!Program.DEBUG & DateTime.Now.Subtract(t.lastCatch).TotalHours < 3) {
                 await cc.RespondAsync($"Stop trying to catch too early you moron. \r\nLast catch at: " + t.lastCatch.ToString());
             } else {
                 // Limited to original 151, not to NumberOfPokemon.
@@ -41,18 +42,33 @@ namespace KPokeBot {
             }
         }
 
-        [Command("list")]
+        [Command("list"), Description("List all the pokemon of another person.")]
         public async Task List(CommandContext cc) {
             StringBuilder sb = new StringBuilder();
             Trainer t = Trainer.GetActiveTrainer(cc.User.Id);
             sb.AppendLine("**" + cc.User.Username + "'s Pokemon:** Captured **" + t.NumOwned + "** Pokemon.");
             foreach (int i in t.pokemonInventory.Keys) {
-                sb.AppendLine(Pokedex.Pokemon[i] + " (" + i.ToString() + ") x" + t.pokemonInventory[i].ToString());
+                sb.AppendLine(Pokedex.Pokemon[i] + " (" + i.ToString() + ") x" + t.pokemonInventory[i].ToString().PadRight(100,' '));
             }
 
-            await cc.RespondAsync(sb.ToString());
+            var pages = Program.interactivity.GeneratePagesInEmbeds(sb.ToString());
+
+            //await cc.RespondAsync(sb.ToString());
+            await Program.interactivity.SendPaginatedMessage(cc.Channel, cc.User, pages, TimeSpan.FromMinutes(5), DSharpPlus.Interactivity.TimeoutBehaviour.Delete);
         }
 
-        
+        //[Command("list"), Description("List all the pokemon of another person.")]
+        //public async Task List(CommandContext cc,[Description("Whose pokedex you want to look at.")] string username) {
+        //    StringBuilder sb = new StringBuilder();
+        //    Trainer t = Trainer.GetActiveTrainer(cc.User.Id);
+        //    sb.AppendLine("**" + cc.User.Username + "'s Pokemon:** Captured **" + t.NumOwned + "** Pokemon.");
+        //    foreach (int i in t.pokemonInventory.Keys) {
+        //        sb.AppendLine(Pokedex.Pokemon[i] + " (" + i.ToString() + ") x" + t.pokemonInventory[i].ToString());
+        //    }
+
+        //    await cc.RespondAsync(sb.ToString());
+        //}
+
+
     }
 }
