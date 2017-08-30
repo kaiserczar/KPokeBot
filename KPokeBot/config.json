@@ -1,0 +1,7 @@
+﻿{
+  "DEBUG": false
+  "TokenReal": "THIS IS THE TOKEN YOU GET FROM DISCORD BOT APP",
+  "TokenTest": "",
+  "PrefixReal": "pk",
+  "PrefixTest": "kp"
+}

@@ -35,5 +35,15 @@ namespace KPokeBot {
             return retVal;
         }
 
+        public static bool IsLegendary(int num) {
+            foreach (int i in Legendaries) {
+                if (num == i) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
     }
 }

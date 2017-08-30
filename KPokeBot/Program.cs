@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
+using Newtonsoft.Json;
 
 namespace KPokeBot {
     public class Program {
 
-        public static bool DEBUG = true;
+        public static bool DEBUG;
 
         public static DiscordClient discord;
         public static CommandsNextModule commands;
@@ -22,49 +23,74 @@ namespace KPokeBot {
 
         static async Task MainAsync(String[] args) {
 
+            // Load config
+            string json = "";
+            using (var fs = System.IO.File.OpenRead("config.json"))
+            using (var sr = new System.IO.StreamReader(fs, new System.Text.UTF8Encoding(false)))
+                json = await sr.ReadToEndAsync();
+
+            ConfigJson jConfig = JsonConvert.DeserializeObject<ConfigJson>(json);
+
+            DEBUG = jConfig.DEBUG;
+
             Pokedex.Init();
             Trainer.Init();
 
+            DiscordConfig dConfig;
+
             // Set up the client connection
             if (DEBUG) {
-                discord = new DiscordClient(new DiscordConfig {
-                    Token = "MzUxNDI1Njc1NDc2ODYwOTM4.DISaLg.U10iSWt9_c5QOClpPxY9wPz5QlY",
+                dConfig = new DiscordConfig {
+                    Token = jConfig.TokenTest,
                     TokenType = TokenType.Bot,
                     UseInternalLogHandler = true,
                     LogLevel = LogLevel.Debug
-                });
+                };
             } else {
-                discord = new DiscordClient(new DiscordConfig {
-                    Token = "MzUwODU5NTcxNDY5ODc3MjU4.DIKLBg.5BXCMFiPYKUNuFkp_wwLB8f2IeY",
+                dConfig = new DiscordConfig {
+                    Token = jConfig.TokenReal,
                     TokenType = TokenType.Bot,
                     UseInternalLogHandler = true,
                     LogLevel = LogLevel.Debug
-                });
+                };
             }
+            discord = new DiscordClient(dConfig);
 
             interactivity = discord.UseInteractivity();
 
             // Set up the command handler
             if (DEBUG) {
                 commands = discord.UseCommandsNext(new CommandsNextConfiguration {
-                    StringPrefix = "kp."
+                    StringPrefix = jConfig.PrefixTest + "."
                 });
                 commands.RegisterCommands<CommandManager>();
             } else {
                 commands = discord.UseCommandsNext(new CommandsNextConfiguration {
-                    StringPrefix = "pk."
+                    StringPrefix = jConfig.PrefixReal + "."
                 });
                 commands.RegisterCommands<CommandManager>();
             }
 
-            //discord.MessageCreated += async e =>
-            //{
-            //    if (e.Message.Content.ToLower().StartsWith("ping"))
-            //        await e.Message.RespondAsync("pong!");
-            //};
-
             await discord.ConnectAsync();
             await Task.Delay(-1);
+        }
+
+        public struct ConfigJson {
+
+            [JsonProperty("DEBUG")]
+            public bool DEBUG { get; private set; }
+
+            [JsonProperty("tokenReal")]
+            public string TokenReal { get; private set; }
+
+            [JsonProperty("tokenTest")]
+            public string TokenTest { get; private set; }
+
+            [JsonProperty("prefixReal")]
+            public string PrefixReal { get; private set; }
+
+            [JsonProperty("prefixTest")]
+            public string PrefixTest { get; private set; }
         }
     }
 }

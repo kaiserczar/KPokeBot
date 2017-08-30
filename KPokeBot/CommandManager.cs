@@ -36,19 +36,23 @@ namespace KPokeBot {
                 t.AddPokemon(pokeNum);
 
                 Uri url = new Uri("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + pokeNum.ToString() + ".png");
-                await cc.RespondAsync($"{cc.User.Mention} has caught a **" + Tools.CapFirst(pName) + "**! \r\nYou now have " + t.NumOwned + " pokemon.\r\nLast catch at: " + t.lastCatch.ToString() + "\r\n" + url.ToString());
+                await cc.RespondAsync($"{cc.User.Mention} has caught a **" + Tools.CapFirst(pName) + "**! \r\nYou now have " + t.pokemonInventory.Count + " unique pokemon and " + t.NumOwned + " total pokemon.\r\nLast catch at: " + t.lastCatch.ToString() + "\r\n" + url.ToString());
 
                 Trainer.SaveAll();
             }
         }
 
-        [Command("list"), Description("List all the pokemon of another person.")]
+        [Command("list"), Description("List all the pokemon you own.")]
         public async Task List(CommandContext cc) {
             StringBuilder sb = new StringBuilder();
             Trainer t = Trainer.GetActiveTrainer(cc.User.Id);
             sb.AppendLine("**" + cc.User.Username + "'s Pokemon:** Captured **" + t.NumOwned + "** Pokemon.");
             foreach (int i in t.pokemonInventory.Keys) {
-                sb.AppendLine(Pokedex.Pokemon[i] + " (" + i.ToString() + ") x" + t.pokemonInventory[i].ToString().PadRight(100,' '));
+                if (Pokedex.IsLegendary(i)) {
+                    sb.AppendLine("**" + Pokedex.Pokemon[i] + "** (" + i.ToString() + ") x" + t.pokemonInventory[i].ToString().PadRight(100, ' '));
+                } else {
+                    sb.AppendLine(Pokedex.Pokemon[i] + " (" + i.ToString() + ") x" + t.pokemonInventory[i].ToString().PadRight(100,' '));
+                }
             }
 
             var pages = Program.interactivity.GeneratePagesInEmbeds(sb.ToString());
