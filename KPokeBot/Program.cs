@@ -16,6 +16,7 @@ namespace KPokeBot {
         public static DiscordClient discord;
         public static CommandsNextModule commands;
         public static InteractivityModule interactivity;
+        public static ConfigJson jConfig;
 
         static void Main(string[] args) {
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -29,7 +30,7 @@ namespace KPokeBot {
             using (var sr = new System.IO.StreamReader(fs, new System.Text.UTF8Encoding(false)))
                 json = await sr.ReadToEndAsync();
 
-            ConfigJson jConfig = JsonConvert.DeserializeObject<ConfigJson>(json);
+            jConfig = JsonConvert.DeserializeObject<ConfigJson>(json);
 
             DEBUG = jConfig.DEBUG;
 
@@ -75,6 +76,14 @@ namespace KPokeBot {
             await Task.Delay(-1);
         }
 
+        public static void SaveConfig() {
+            JsonSerializer ser = new JsonSerializer();
+            using (System.IO.StreamWriter sw = new System.IO.StreamWriter("config.json"))
+            using (JsonWriter writer = new JsonTextWriter(sw)) {
+                ser.Serialize(writer, jConfig);
+            }
+        }
+
         public struct ConfigJson {
 
             [JsonProperty("DEBUG")]
@@ -91,6 +100,12 @@ namespace KPokeBot {
 
             [JsonProperty("prefixTest")]
             public string PrefixTest { get; private set; }
+
+            [JsonProperty("numLegendariesSeen")]
+            public int NumLegendariesSeen { get; set; }
+
+            [JsonProperty("numLegendariesCaught")]
+            public int NumLegendariesCaught { get; set; }
         }
     }
 }

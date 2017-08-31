@@ -27,8 +27,13 @@ namespace KPokeBot {
             bool retVal = true;
 
             foreach (int i in Legendaries) {
-                if (pokeNum == i & r.Next(4) != 0) {
-                    retVal = false;
+                if (pokeNum == i) {
+                    Program.jConfig.NumLegendariesSeen++;
+                    if (r.Next(4) != 0) {
+                        retVal = false;
+                    } else {
+                        Program.jConfig.NumLegendariesCaught++;
+                    }
                 }
             }
 

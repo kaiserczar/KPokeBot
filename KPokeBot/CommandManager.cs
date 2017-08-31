@@ -30,8 +30,10 @@ namespace KPokeBot {
                 while (!Pokedex.GetNewPokemon(rand, out pokeNum)) {
                     pName = Pokedex.Pokemon[pokeNum];
                     await cc.RespondAsync($"You almost caught a " + Tools.CapFirst(pName) + " but it got away because you suck!");
+                    Program.SaveConfig();
                 }
                 pName = Pokedex.Pokemon[pokeNum];
+                if (Pokedex.IsLegendary(pokeNum)) Program.SaveConfig();
 
                 t.AddPokemon(pokeNum);
 
@@ -59,6 +61,11 @@ namespace KPokeBot {
 
             //await cc.RespondAsync(sb.ToString());
             await Program.interactivity.SendPaginatedMessage(cc.Channel, cc.User, pages, TimeSpan.FromMinutes(5), DSharpPlus.Interactivity.TimeoutBehaviour.Delete);
+        }
+
+        [Command("legendary"), Description("Lists legendary sightings.")]
+        public async Task Legendary(CommandContext cc) {
+            await cc.RespondAsync("There have been " + Program.jConfig.NumLegendariesSeen + " legendary sightings and " + Program.jConfig.NumLegendariesCaught + " caught.");
         }
 
         //[Command("list"), Description("List all the pokemon of another person.")]
