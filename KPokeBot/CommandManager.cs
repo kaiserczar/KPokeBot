@@ -51,9 +51,9 @@ namespace KPokeBot {
             sb.AppendLine("**" + cc.User.Username + "'s Pokemon:** Captured **" + t.pokemonInventory.Count + "** unique Pokemon and **" + t.NumOwned + "** total Pokemon.");
             foreach (int i in t.pokemonInventory.Keys) {
                 if (Pokedex.IsLegendary(i)) {
-                    sb.AppendLine("**" + Pokedex.Pokemon[i] + "** (" + i.ToString() + ") x" + t.pokemonInventory[i].ToString().PadRight(100, ' '));
+                    sb.AppendLine("**" + Pokedex.Pokemon[i] + "** (" + i.ToString() + ") x" + t.pokemonInventory[i].ToString().PadRight(120, ' '));
                 } else {
-                    sb.AppendLine(Pokedex.Pokemon[i] + " (" + i.ToString() + ") x" + t.pokemonInventory[i].ToString().PadRight(100,' '));
+                    sb.AppendLine(Pokedex.Pokemon[i] + " (" + i.ToString() + ") x" + t.pokemonInventory[i].ToString().PadRight(120,' '));
                 }
             }
 
@@ -82,9 +82,9 @@ namespace KPokeBot {
             sb.AppendLine("**Global Pokemon:** Captured **" + totalPokemon.Count + "** unique Pokemon and **" + totalPokemon.Values.Sum() + "** total Pokemon.");
             foreach (int i in totalPokemon.Keys) {
                 if (Pokedex.IsLegendary(i)) {
-                    sb.AppendLine("**" + Pokedex.Pokemon[i] + "** (" + i.ToString() + ") x" + totalPokemon[i].ToString().PadRight(100, ' '));
+                    sb.AppendLine("**" + Pokedex.Pokemon[i] + "** (" + i.ToString() + ") x" + totalPokemon[i].ToString().PadRight(120, ' '));
                 } else {
-                    sb.AppendLine(Pokedex.Pokemon[i] + " (" + i.ToString() + ") x" + totalPokemon[i].ToString().PadRight(100, ' '));
+                    sb.AppendLine(Pokedex.Pokemon[i] + " (" + i.ToString() + ") x" + totalPokemon[i].ToString().PadRight(120, ' '));
                 }
             }
 
