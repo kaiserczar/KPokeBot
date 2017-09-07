@@ -48,7 +48,7 @@ namespace KPokeBot {
         public async Task List(CommandContext cc) {
             StringBuilder sb = new StringBuilder();
             Trainer t = Trainer.GetActiveTrainer(cc.User.Id);
-            sb.AppendLine("**" + cc.User.Username + "'s Pokemon:** Captured **" + t.NumOwned + "** Pokemon.");
+            sb.AppendLine("**" + cc.User.Username + "'s Pokemon:** Captured **" + t.pokemonInventory.Count + "** unique Pokemon and **" + t.NumOwned + "** total Pokemon.");
             foreach (int i in t.pokemonInventory.Keys) {
                 if (Pokedex.IsLegendary(i)) {
                     sb.AppendLine("**" + Pokedex.Pokemon[i] + "** (" + i.ToString() + ") x" + t.pokemonInventory[i].ToString().PadRight(100, ' '));
@@ -66,6 +66,31 @@ namespace KPokeBot {
         [Command("legendary"), Description("Lists legendary sightings.")]
         public async Task Legendary(CommandContext cc) {
             await cc.RespondAsync("There have been " + Program.jConfig.NumLegendariesSeen + " legendary sightings and " + Program.jConfig.NumLegendariesCaught + " caught.");
+        }
+
+
+        private static DateTime lastGlobalDex = DateTime.Now.Subtract(new TimeSpan(2, 0, 0));
+        [Command("globaldex"), Description("Lists the total pokemon caught in the universe.")]
+        public async Task GlobalDex(CommandContext cc) {
+            List<SortedDictionary<int, int>> lists = new List<SortedDictionary<int, int>>();
+            foreach (Trainer t in Trainer.Trainers) {
+                lists.Add(t.pokemonInventory);
+            }
+            SortedDictionary<int, int> totalPokemon = Tools.DictionaryCombine(lists);
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("**Global Pokemon:** Captured **" + totalPokemon.Count + "** unique Pokemon and **" + totalPokemon.Values.Sum() + "** total Pokemon.");
+            foreach (int i in totalPokemon.Keys) {
+                if (Pokedex.IsLegendary(i)) {
+                    sb.AppendLine("**" + Pokedex.Pokemon[i] + "** (" + i.ToString() + ") x" + totalPokemon[i].ToString().PadRight(100, ' '));
+                } else {
+                    sb.AppendLine(Pokedex.Pokemon[i] + " (" + i.ToString() + ") x" + totalPokemon[i].ToString().PadRight(100, ' '));
+                }
+            }
+
+            var pages = Program.interactivity.GeneratePagesInEmbeds(sb.ToString());
+            
+            await Program.interactivity.SendPaginatedMessage(cc.Channel, cc.User, pages, TimeSpan.FromMinutes(5), DSharpPlus.Interactivity.TimeoutBehaviour.Delete);
         }
 
         //[Command("list"), Description("List all the pokemon of another person.")]

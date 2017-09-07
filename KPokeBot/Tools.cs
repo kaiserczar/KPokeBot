@@ -30,5 +30,19 @@ namespace KPokeBot {
             return retVal;
         }
 
+        public static SortedDictionary<int, int> DictionaryCombine(List<SortedDictionary<int,int>> dictionaries) {
+            SortedDictionary<int, int> retVal = new SortedDictionary<int, int>();
+            foreach (SortedDictionary<int,int> d in dictionaries) {
+                foreach (int i in d.Keys) {
+                    if (retVal.ContainsKey(i)) {
+                        retVal[i] += d[i];
+                    } else {
+                        retVal[i] = d[i];
+                    }
+                }
+            }
+            return retVal;
+        }
+
     }
 }
