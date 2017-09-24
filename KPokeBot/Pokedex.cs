@@ -22,17 +22,17 @@ namespace KPokeBot {
         }
 
         // Returns whether it was a success or failure to catch.
-        public static bool GetNewPokemon(Random r, out int pokeNum) {
+        public static bool GetNewPokemon(Random r, out int pokeNum, bool updateConfig = true) {
             pokeNum = r.Next(NumberOfPokemon) + 1;
             bool retVal = true;
 
             foreach (int i in Legendaries) {
                 if (pokeNum == i) {
-                    Program.jConfig.NumLegendariesSeen++;
+                    if (updateConfig) Program.jConfig.NumLegendariesSeen++;
                     if (r.Next(4) != 0) {
                         retVal = false;
                     } else {
-                        Program.jConfig.NumLegendariesCaught++;
+                        if (updateConfig) Program.jConfig.NumLegendariesCaught++;
                     }
                 }
             }
