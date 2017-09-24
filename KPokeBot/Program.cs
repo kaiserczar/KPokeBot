@@ -37,18 +37,18 @@ namespace KPokeBot {
             Pokedex.Init();
             Trainer.Init();
 
-            DiscordConfig dConfig;
+            DiscordConfiguration dConfig;
 
             // Set up the client connection
             if (DEBUG) {
-                dConfig = new DiscordConfig {
+                dConfig = new DiscordConfiguration {
                     Token = jConfig.TokenTest,
                     TokenType = TokenType.Bot,
                     UseInternalLogHandler = true,
                     LogLevel = LogLevel.Debug
                 };
             } else {
-                dConfig = new DiscordConfig {
+                dConfig = new DiscordConfiguration {
                     Token = jConfig.TokenReal,
                     TokenType = TokenType.Bot,
                     UseInternalLogHandler = true,
