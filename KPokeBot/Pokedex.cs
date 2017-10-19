@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace KPokeBot {
     public class Pokedex {
 
-        public static int NumberOfPokemon = 151; // 802 real
+        public static int NumberOfPokemon = 251; // 802 real
         public static Dictionary<int, string> Pokemon;
-        public static List<int> Legendaries = new List<int>(5) { 144, 145, 146, 150, 151 };
+        public static List<int> Legendaries = new List<int>(5) { 144, 145, 146, 150, 151, 243, 244, 245, 249, 250, 251 };
 
         public static void Init() {
             Pokemon = new Dictionary<int, string>();
